@@ -66,7 +66,8 @@ if choice!="From a local file" and selected_symbols:
 	down = st.sidebar.checkbox('Download data')
 	if down:
 		data = yf.download(selected_symbols, start=start_date, end=end_date, interval = freq_d[freq])
-
+		if len(selected_symbols)==1:
+			st.write(data.columns)
 try:
 	if len(data)>0:
 		st.write("Input data:")
