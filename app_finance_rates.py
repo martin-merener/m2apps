@@ -79,8 +79,10 @@ try:
 			st.markdown('''##### Some values in your data were missing, and they were filled via interpolation.''')
 			st.write(missing_summary.loc[missing_summary['# missing values found']>0])
 			data.interpolate(inplace=True)
-		variables = list(set([p[0] for p in data.columns]))
-		symbols = list(set([p[1] for p in data.columns]))
+		#variables = list(set([p[0] for p in data.columns]))
+		#symbols = list(set([p[1] for p in data.columns]))
+		variables = [p[0] for p in data.columns]
+		symbols = [p[1] for p in data.columns]
 		st.write(symbols)
 		st.write(variables)		
 		if ('Close' in variables) and ('Open' in variables):
@@ -97,10 +99,7 @@ try:
 			else:
 				change_rates['hour'] = change_rates.index
 				change_rates['hour'] = change_rates['hour'].apply(lambda dt: datetime.datetime.strptime(str(dt)[0:19], "%Y-%m-%d %H:%M:%S").hour)
-			st.write("here1?")
-			st.write(change_rates.shape)
 			if change_rates.shape[1]>0:
-				st.write("here2?")
 				latex = r'''### Some insights on the price change (%), $r = \frac{S_{close}}{S_{open}}-1$'''
 				st.markdown(latex)
 				for s in symbols:
