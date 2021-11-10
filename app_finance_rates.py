@@ -95,7 +95,7 @@ try:
 			else:
 				change_rates['hour'] = change_rates.index
 				change_rates['hour'] = change_rates['hour'].apply(lambda dt: datetime.datetime.strptime(str(dt)[0:19], "%Y-%m-%d %H:%M:%S").hour)
-			if change_rates.shape[1]>1:
+			if change_rates.shape[1]>=1:
 				st.write(" ")
 				latex = r'''### Some insights on the price change (%), $r = \frac{S_{close}}{S_{open}}-1$'''
 				st.markdown(latex)
