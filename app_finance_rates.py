@@ -67,7 +67,8 @@ if choice!="From a local file" and selected_symbols:
 	if down:
 		data = yf.download(selected_symbols, start=start_date, end=end_date, interval = freq_d[freq])
 		if len(selected_symbols)==1:
-			data.columns = [(v,selected_symbols[0]) for v in list(data.columns)] # this is just a patch because the data columns are different if there's only 1 symbol
+			data.columns=pd.MultiIndex.from_tuples([(v,selected_symbols[0]) for v in list(data.columns)]) # a patch because the data columns are different if there's only 1 symbol
+			#data.columns = [(v,selected_symbols[0]) for v in list(data.columns)] 
 try:
 	if len(data)>0:
 		st.write("Input data:")
@@ -80,10 +81,10 @@ try:
 			st.markdown('''##### Some values in your data were missing, and they were filled via interpolation.''')
 			st.write(missing_summary.loc[missing_summary['# missing values found']>0])
 			data.interpolate(inplace=True)
-		#variables = list(set([p[0] for p in data.columns]))
-		#symbols = list(set([p[1] for p in data.columns]))
-		variables = [p[0] for p in data.columns]
-		symbols = [p[1] for p in data.columns]
+		variables = list(set([p[0] for p in data.columns]))
+		symbols = list(set([p[1] for p in data.columns]))
+		#variables = [p[0] for p in data.columns]
+		#symbols = [p[1] for p in data.columns]
 		st.write(symbols)
 		st.write(variables)		
 		if ('Close' in variables) and ('Open' in variables):
