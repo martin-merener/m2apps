@@ -83,10 +83,6 @@ try:
 			data.interpolate(inplace=True)
 		variables = list(set([p[0] for p in data.columns]))
 		symbols = list(set([p[1] for p in data.columns]))
-		#variables = [p[0] for p in data.columns]
-		#symbols = [p[1] for p in data.columns]
-		st.write(symbols)
-		st.write(variables)		
 		if ('Close' in variables) and ('Open' in variables):
 			cols_analyze = [(v,s) for v in ['Open', 'Close'] for s in symbols]
 			data_analyze = data[cols_analyze].copy()
