@@ -67,8 +67,7 @@ if choice!="From a local file" and selected_symbols:
 	if down:
 		data = yf.download(selected_symbols, start=start_date, end=end_date, interval = freq_d[freq])
 		if len(selected_symbols)==1:
-			st.write([(v,selected_symbols[0]) for v in list(data.columns)])
-			st.write(data.columns)
+			data.columns = [(v,selected_symbols[0]) for v in list(data.columns)] # this is just a patch because the data columns are different if there's only 1 symbol
 try:
 	if len(data)>0:
 		st.write("Input data:")
