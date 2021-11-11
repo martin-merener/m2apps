@@ -138,6 +138,8 @@ try:
 						ax3.tick_params(axis = "x", which = "both", bottom = True, top = True, direction='in', labelcolor='white') # COULD NOT FIND ANOTHER WAY TO HIDE THESE LABELS
 						ax3.tick_params(axis = "y", which = "both", bottom = True, top = True, direction='in', labelcolor='white')
 						ax3 = fig.add_subplot(143)
+						for tick in ax3.get_xticklabels():
+						    tick.set_rotation(90)						
 						ax3.grid(color='black', linestyle='-', linewidth=0.5, alpha=0.2)	
 						ax3 = sns.violinplot(x = change_rates_s['month'], y = np.array(change_rates[s]))
 						ax3.set_xlabel('Month')
@@ -194,6 +196,8 @@ try:
 						ax4.tick_params(axis = "x", which = "both", bottom = True, top = True, direction='in', labelcolor='white') # COULD NOT FIND ANOTHER WAY TO HIDE THESE LABELS
 						ax4.tick_params(axis = "y", which = "both", bottom = True, top = True, direction='in', labelcolor='white')
 						ax4 = fig.add_subplot(144)
+						for tick in ax4.get_xticklabels():
+						    tick.set_rotation(90)
 						ax4.grid(color='black', linestyle='-', linewidth=0.5, alpha=0.2)	
 						ax4 = sns.violinplot(x = list(change_rates_s['month']), y = np.array(change_rates[s]))
 						ax4.set_xlabel('Month')
