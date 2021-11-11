@@ -20,6 +20,7 @@ data=None
 symbol_company_pairs = [tuple(a[0:2]) for a in symbols_df.values]
 day_dict = {0:'Mon', 1:'Tue', 2:'Wed', 3:'Thu', 4:'Fri', 5:'Sat', 6:'Sun'}
 month_dict = {1:'Jan', 2:'Feb', 3:'Mar', 4:'Apr', 5:'May', 6:'Jun', 7:'Jul', 8:'Aug', 9:'Sep', 10:'Oct', 11:'Nov', 11:'Dec'}
+qrt_dict = {1:'Q1', 2:'Q2', 3:'Q3', 4:'Q4'}
 
 if choice=='Typing symbols/company names':
 	selection = st.sidebar.multiselect('Type symbol or company name: ', symbol_company_pairs)
@@ -95,6 +96,8 @@ try:
 				change_rates['weekday'] = change_rates['weekday'].apply(lambda dt: datetime.datetime.strptime(str(dt)[0:10], "%Y-%m-%d").weekday())
 				change_rates['month'] = change_rates.index
 				change_rates['month'] = change_rates['month'].apply(lambda dt: datetime.datetime.strptime(str(dt)[0:10], "%Y-%m-%d").month)
+				change_rates['quarter'] = change_rates.index
+				change_rates['quarter'] = change_rates['quarter'].apply(lambda dt: int(np.ceil(datetime.datetime.strptime(str(dt)[0:10], "%Y-%m-%d").month/3)))				
 			else:
 				change_rates['hour'] = change_rates.index
 				change_rates['hour'] = change_rates['hour'].apply(lambda dt: datetime.datetime.strptime(str(dt)[0:19], "%Y-%m-%d %H:%M:%S").hour)
@@ -108,7 +111,7 @@ try:
 				for s in symbols:
 					st.markdown('''##### {0} - {1}:'''.format(s, dict(symbol_company_pairs)[s]))
 					if freq=='day':
-						fig, (ax1, ax2, ax3) = plt.subplots(1,3, figsize=(12,4))
+						fig, (ax1, ax2, ax3, ax4) = plt.subplots(1,3, figsize=(12,3))
 						plt.tight_layout(pad=1, w_pad=3.5, h_pad=1.0)
 						ax1.set_title('Histogram for % change')
 						ax1.tick_params(axis = "x", which = "both", bottom = True, top = True, direction='in', labelcolor='white') # COULD NOT FIND ANOTHER WAY TO HIDE THESE LABELS
@@ -140,6 +143,18 @@ try:
 						ax3 = sns.violinplot(x = change_rates_s['month'], y = np.array(change_rates[s]))
 						ax3.set_xlabel('Month')
 						ax3.set_ylabel('% change')
+
+						change_rates_s = change_rates.sort_values(by='quarter').copy()
+						change_rates_s['quarter'] = change_rates_s['month'].apply(lambda x: qrt_dict[x])
+						ax3.set_title('% change by quarter')
+						ax3.tick_params(axis = "x", which = "both", bottom = True, top = True, direction='in', labelcolor='white') # COULD NOT FIND ANOTHER WAY TO HIDE THESE LABELS
+						ax3.tick_params(axis = "y", which = "both", bottom = True, top = True, direction='in', labelcolor='white')
+						ax3 = fig.add_subplot(133)
+						ax3.grid(color='black', linestyle='-', linewidth=0.5, alpha=0.2)	
+						ax3 = sns.violinplot(x = change_rates_s['quarter'], y = np.array(change_rates[s]))
+						ax3.set_xlabel('quarter')
+						ax3.set_ylabel('% change')
+
 						st.pyplot(fig)										
 					else:
 						fig, (ax1, ax2, ax3, ax4) = plt.subplots(1,4, figsize=(12,3))
