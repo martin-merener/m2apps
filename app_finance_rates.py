@@ -116,7 +116,7 @@ try:
 						ax1.set_title('Histogram for % change')
 						ax1.tick_params(axis = "x", which = "both", bottom = True, top = True, direction='in', labelcolor='white') # COULD NOT FIND ANOTHER WAY TO HIDE THESE LABELS
 						ax1.tick_params(axis = "y", which = "both", bottom = True, top = True, direction='in', labelcolor='white')
-						ax1 = fig.add_subplot(131)
+						ax1 = fig.add_subplot(141)
 						ax1.grid(color='black', linestyle='-', linewidth=0.5, alpha=0.2)
 						ax1 = sns.histplot(change_rates[s], bins=50, kde=True)
 						ax1.set_xlabel('% change')
@@ -127,7 +127,7 @@ try:
 						ax2.set_title('% change by day of the week')				
 						ax2.tick_params(axis = "x", which = "both", bottom = True, top = True, direction='in', labelcolor='white') # COULD NOT FIND ANOTHER WAY TO HIDE THESE LABELS
 						ax2.tick_params(axis = "y", which = "both", bottom = True, top = True, direction='in', labelcolor='white')
-						ax2 = fig.add_subplot(132)
+						ax2 = fig.add_subplot(142)
 						ax2.grid(color='black', linestyle='-', linewidth=0.5, alpha=0.2)	
 						ax2 = sns.violinplot(x = change_rates_s['weekday'], y = np.array(change_rates[s]))
 						ax2.set_xlabel('Day')
@@ -138,7 +138,7 @@ try:
 						ax3.set_title('% change by month')
 						ax3.tick_params(axis = "x", which = "both", bottom = True, top = True, direction='in', labelcolor='white') # COULD NOT FIND ANOTHER WAY TO HIDE THESE LABELS
 						ax3.tick_params(axis = "y", which = "both", bottom = True, top = True, direction='in', labelcolor='white')
-						ax3 = fig.add_subplot(133)
+						ax3 = fig.add_subplot(143)
 						ax3.grid(color='black', linestyle='-', linewidth=0.5, alpha=0.2)	
 						ax3 = sns.violinplot(x = change_rates_s['month'], y = np.array(change_rates[s]))
 						ax3.set_xlabel('Month')
@@ -146,14 +146,14 @@ try:
 
 						change_rates_s = change_rates.sort_values(by='quarter').copy()
 						change_rates_s['quarter'] = change_rates_s['month'].apply(lambda x: qrt_dict[x])
-						ax3.set_title('% change by quarter')
-						ax3.tick_params(axis = "x", which = "both", bottom = True, top = True, direction='in', labelcolor='white') # COULD NOT FIND ANOTHER WAY TO HIDE THESE LABELS
-						ax3.tick_params(axis = "y", which = "both", bottom = True, top = True, direction='in', labelcolor='white')
-						ax3 = fig.add_subplot(133)
-						ax3.grid(color='black', linestyle='-', linewidth=0.5, alpha=0.2)	
-						ax3 = sns.violinplot(x = change_rates_s['quarter'], y = np.array(change_rates[s]))
-						ax3.set_xlabel('quarter')
-						ax3.set_ylabel('% change')
+						ax4.set_title('% change by quarter')
+						ax4.tick_params(axis = "x", which = "both", bottom = True, top = True, direction='in', labelcolor='white') # COULD NOT FIND ANOTHER WAY TO HIDE THESE LABELS
+						ax4.tick_params(axis = "y", which = "both", bottom = True, top = True, direction='in', labelcolor='white')
+						ax4 = fig.add_subplot(144)
+						ax4.grid(color='black', linestyle='-', linewidth=0.5, alpha=0.2)	
+						ax4 = sns.violinplot(x = change_rates_s['quarter'], y = np.array(change_rates[s]))
+						ax4.set_xlabel('quarter')
+						ax4.set_ylabel('% change')
 
 						st.pyplot(fig)										
 					else:
