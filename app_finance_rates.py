@@ -111,7 +111,7 @@ try:
 				for s in symbols:
 					st.markdown('''##### {0} - {1}:'''.format(s, dict(symbol_company_pairs)[s]))
 					if freq=='day':
-						fig, (ax1, ax2, ax3, ax4) = plt.subplots(1,3, figsize=(12,3))
+						fig, (ax1, ax2, ax3, ax4) = plt.subplots(1,4, figsize=(12,3))
 						plt.tight_layout(pad=1, w_pad=3.5, h_pad=1.0)
 						ax1.set_title('Histogram for % change')
 						ax1.tick_params(axis = "x", which = "both", bottom = True, top = True, direction='in', labelcolor='white') # COULD NOT FIND ANOTHER WAY TO HIDE THESE LABELS
