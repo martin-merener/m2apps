@@ -7,7 +7,8 @@ import seaborn as sns
 import datetime
 from dateutil.relativedelta import relativedelta
 
-st.set_page_config(page_title='Rates insights 🦡', page_icon='🐐', layout='centered') # 🦡 badger;  🐐 goat
+#st.set_page_config(page_title='Rates insights 🦡', page_icon='🐐', layout='centered') # 🦡 badger;  🐐 goat
+st.set_page_config(page_title='Rates insights 🦡', page_icon='🐐', layout='wide') # 🦡 badger;  🐐 goat
 symbols_df = pd.read_csv("symbols.csv")
 st.markdown('''# Open-Close Price Change''')
 st.sidebar.markdown('''### How do you want to get your data?''')
@@ -18,7 +19,7 @@ data=None
 
 symbol_company_pairs = [tuple(a[0:2]) for a in symbols_df.values]
 day_dict = {0:'Mon', 1:'Tue', 2:'Wed', 3:'Thu', 4:'Fri', 5:'Sat', 6:'Sun'}
-
+month_dict = {1:'Jan', 2:'Feb', 3:'Mar', 4:'Apr', 5:'May', 6:'Jun', 7:'Jul', 8:'Aug', 9:'Sep', 10:'Oct', 11:'Nov', 11:'Dec'}
 
 if choice=='Typing symbols/company names':
 	selection = st.sidebar.multiselect('Type symbol or company name: ', symbol_company_pairs)
@@ -53,8 +54,6 @@ elif choice=='From a local file':
 		else:
 			freq = 'hour'
 		st.markdown("###### The data uploaded appears to have one observation per {0}.".format(freq))
-		#hours = [datetime.datetime.strptime(dt, "%Y-%m-%d").hour for dt in dates]
-		#st.write(np.std(np.array(hours)))
 if choice!="From a local file" and selected_symbols:
 	today = datetime.date.today()
 	yesterday = today - datetime.timedelta(days=1)
@@ -93,44 +92,98 @@ try:
 			change_rates.columns = symbols
 			if freq=='day':
 				change_rates['weekday'] = change_rates.index
-				change_rates['weekday'] = change_rates['weekday'].apply(lambda dt: day_dict[datetime.datetime.strptime(str(dt)[0:10], "%Y-%m-%d").weekday()])
+				change_rates['weekday'] = change_rates['weekday'].apply(lambda dt: datetime.datetime.strptime(str(dt)[0:10], "%Y-%m-%d").weekday())
+				change_rates['month'] = change_rates.index
+				change_rates['month'] = change_rates['month'].apply(lambda dt: datetime.datetime.strptime(str(dt)[0:10], "%Y-%m-%d").month)
 			else:
 				change_rates['hour'] = change_rates.index
 				change_rates['hour'] = change_rates['hour'].apply(lambda dt: datetime.datetime.strptime(str(dt)[0:19], "%Y-%m-%d %H:%M:%S").hour)
+				change_rates['weekday'] = change_rates.index
+				change_rates['weekday'] = change_rates['weekday'].apply(lambda dt: datetime.datetime.strptime(str(dt)[0:19], "%Y-%m-%d %H:%M:%S").weekday())
+				change_rates['month'] = change_rates.index
+				change_rates['month'] = change_rates['month'].apply(lambda dt: datetime.datetime.strptime(str(dt)[0:19], "%Y-%m-%d %H:%M:%S").month)				
 			if change_rates.shape[1]>0:
 				latex = r'''### Some insights on the price change (%), $r = \frac{S_{close}}{S_{open}}-1$'''
 				st.markdown(latex)
 				for s in symbols:
 					st.markdown('''##### {0} - {1}:'''.format(s, dict(symbol_company_pairs)[s]))
-					fig, (ax1, ax2) = plt.subplots(1,2, figsize=(12,5))
-					#plt.tight_layout(pad=1, w_pad=3.5, h_pad=1.0)
-					ax1.tick_params(axis = "x", which = "both", bottom = True, top = True, direction='in', labelcolor='white') # COULD NOT FIND ANOTHER WAY TO HIDE THESE LABELS
-					ax1.tick_params(axis = "y", which = "both", bottom = True, top = True, direction='in', labelcolor='white')
-					ax1 = fig.add_subplot(121)
-					ax1.set_title('Histogram & density for % change')
-					ax1.grid(color='black', linestyle='-', linewidth=0.5, alpha=0.2)
-					ax1 = sns.histplot(change_rates[s], bins=50, kde=True)
-					ax1.set_xlabel('% change')
-					ax1.set_ylabel('Count')
 					if freq=='day':
+						fig, (ax1, ax2, ax3) = plt.subplots(1,3, figsize=(12,4))
+						plt.tight_layout(pad=1, w_pad=3.5, h_pad=1.0)
+						ax1.set_title('Histogram for % change')
+						ax1.tick_params(axis = "x", which = "both", bottom = True, top = True, direction='in', labelcolor='white') # COULD NOT FIND ANOTHER WAY TO HIDE THESE LABELS
+						ax1.tick_params(axis = "y", which = "both", bottom = True, top = True, direction='in', labelcolor='white')
+						ax1 = fig.add_subplot(131)
+						ax1.grid(color='black', linestyle='-', linewidth=0.5, alpha=0.2)
+						ax1 = sns.histplot(change_rates[s], bins=50, kde=True)
+						ax1.set_xlabel('% change')
+						ax1.set_ylabel('Count')
+
+						change_rates_s = change_rates.sort_values(by='weekday').copy()
+						change_rates_s['weekday'] = change_rates_s['weekday'].apply(lambda x: day_dict[x])
 						ax2.set_title('% change by day of the week')				
 						ax2.tick_params(axis = "x", which = "both", bottom = True, top = True, direction='in', labelcolor='white') # COULD NOT FIND ANOTHER WAY TO HIDE THESE LABELS
 						ax2.tick_params(axis = "y", which = "both", bottom = True, top = True, direction='in', labelcolor='white')
-						ax2 = fig.add_subplot(122)
-						ax2.set_xlabel('Day of week')
-						ax2.set_ylabel('% change')
-						ax2 = sns.violinplot(x = list(change_rates['weekday']), y = np.array(change_rates[s]))
+						ax2 = fig.add_subplot(132)
 						ax2.grid(color='black', linestyle='-', linewidth=0.5, alpha=0.2)	
-						st.pyplot(fig)				
+						ax2 = sns.violinplot(x = change_rates_s['weekday'], y = np.array(change_rates[s]))
+						ax2.set_xlabel('Day')
+						ax2.set_ylabel('% change')
+
+						change_rates_s = change_rates.sort_values(by='month').copy()
+						change_rates_s['month'] = change_rates_s['month'].apply(lambda x: month_dict[x])
+						ax3.set_title('% change by month')
+						ax3.tick_params(axis = "x", which = "both", bottom = True, top = True, direction='in', labelcolor='white') # COULD NOT FIND ANOTHER WAY TO HIDE THESE LABELS
+						ax3.tick_params(axis = "y", which = "both", bottom = True, top = True, direction='in', labelcolor='white')
+						ax3 = fig.add_subplot(133)
+						ax3.grid(color='black', linestyle='-', linewidth=0.5, alpha=0.2)	
+						ax3 = sns.violinplot(x = change_rates_s['month'], y = np.array(change_rates[s]))
+						ax3.set_xlabel('Month')
+						ax3.set_ylabel('% change')
+						st.pyplot(fig)										
 					else:
+						fig, (ax1, ax2, ax3, ax4) = plt.subplots(1,4, figsize=(12,3))
+						plt.tight_layout(pad=1, w_pad=3.5, h_pad=1.0)
+						ax1.set_title('Histogram for % change')
+						ax1.tick_params(axis = "x", which = "both", bottom = True, top = True, direction='in', labelcolor='white') # COULD NOT FIND ANOTHER WAY TO HIDE THESE LABELS
+						ax1.tick_params(axis = "y", which = "both", bottom = True, top = True, direction='in', labelcolor='white')
+						ax1 = fig.add_subplot(141)
+						ax1.grid(color='black', linestyle='-', linewidth=0.5, alpha=0.2)
+						ax1 = sns.histplot(change_rates[s], bins=50, kde=True)
+						ax1.set_xlabel('% change')
+						ax1.set_ylabel('Count')
+
+						change_rates_s = change_rates.sort_values(by='hour').copy()
 						ax2.set_title('% change by hour of the day')				
 						ax2.tick_params(axis = "x", which = "both", bottom = True, top = True, direction='in', labelcolor='white') # COULD NOT FIND ANOTHER WAY TO HIDE THESE LABELS
 						ax2.tick_params(axis = "y", which = "both", bottom = True, top = True, direction='in', labelcolor='white')
-						ax2 = fig.add_subplot(122)
-						ax2.set_xlabel('Hour of day')
-						ax2.set_ylabel('% change')
-						ax2 = sns.violinplot(x = list(change_rates['hour']), y = np.array(change_rates[s]))
+						ax2 = fig.add_subplot(142)
 						ax2.grid(color='black', linestyle='-', linewidth=0.5, alpha=0.2)	
+						ax2 = sns.violinplot(x = list(change_rates_s['hour']), y = np.array(change_rates[s]))
+						ax2.set_xlabel('Hour')
+						ax2.set_ylabel('% change')
+
+						change_rates_s = change_rates.sort_values(by='weekday').copy()
+						change_rates_s['weekday'] = change_rates_s['weekday'].apply(lambda x: day_dict[x])
+						ax3.set_title('% change by day of the week')				
+						ax3.tick_params(axis = "x", which = "both", bottom = True, top = True, direction='in', labelcolor='white') # COULD NOT FIND ANOTHER WAY TO HIDE THESE LABELS
+						ax3.tick_params(axis = "y", which = "both", bottom = True, top = True, direction='in', labelcolor='white')
+						ax3 = fig.add_subplot(143)
+						ax3.grid(color='black', linestyle='-', linewidth=0.5, alpha=0.2)	
+						ax3 = sns.violinplot(x = list(change_rates_s['weekday']), y = np.array(change_rates[s]))
+						ax3.set_xlabel('Day')
+						ax3.set_ylabel('% change')
+
+						change_rates_s = change_rates.sort_values(by='month').copy()
+						change_rates_s['month'] = change_rates_s['month'].apply(lambda x: month_dict[x])
+						ax4.set_title('% change by month')				
+						ax4.tick_params(axis = "x", which = "both", bottom = True, top = True, direction='in', labelcolor='white') # COULD NOT FIND ANOTHER WAY TO HIDE THESE LABELS
+						ax4.tick_params(axis = "y", which = "both", bottom = True, top = True, direction='in', labelcolor='white')
+						ax4 = fig.add_subplot(144)
+						ax4.grid(color='black', linestyle='-', linewidth=0.5, alpha=0.2)	
+						ax4 = sns.violinplot(x = list(change_rates_s['month']), y = np.array(change_rates[s]))
+						ax4.set_xlabel('Month')
+						ax4.set_ylabel('% change')
 						st.pyplot(fig)
 
 except:
