@@ -96,8 +96,7 @@ try:
 				change_rates['weekday'] = change_rates['weekday'].apply(lambda dt: datetime.datetime.strptime(str(dt)[0:10], "%Y-%m-%d").weekday())
 				change_rates['month'] = change_rates.index
 				change_rates['month'] = change_rates['month'].apply(lambda dt: datetime.datetime.strptime(str(dt)[0:10], "%Y-%m-%d").month)
-				change_rates['quarter'] = change_rates.index
-				change_rates['quarter'] = change_rates['quarter'].apply(lambda dt: int(np.ceil(datetime.datetime.strptime(str(dt)[0:10], "%Y-%m-%d").month/3)))				
+				change_rates['quarter'] = change_rates['month'].apply(lambda m: int(np.ceil(m/3)))				
 			else:
 				change_rates['hour'] = change_rates.index
 				change_rates['hour'] = change_rates['hour'].apply(lambda dt: datetime.datetime.strptime(str(dt)[0:19], "%Y-%m-%d %H:%M:%S").hour)
@@ -145,7 +144,7 @@ try:
 						ax3.set_ylabel('% change')
 
 						change_rates_s = change_rates.sort_values(by='quarter').copy()
-						change_rates_s['quarter'] = change_rates_s['month'].apply(lambda x: qrt_dict[x])
+						change_rates_s['quarter'] = change_rates_s['quarter'].apply(lambda x: qrt_dict[x])
 						ax4.set_title('% change by quarter')
 						ax4.tick_params(axis = "x", which = "both", bottom = True, top = True, direction='in', labelcolor='white') # COULD NOT FIND ANOTHER WAY TO HIDE THESE LABELS
 						ax4.tick_params(axis = "y", which = "both", bottom = True, top = True, direction='in', labelcolor='white')
