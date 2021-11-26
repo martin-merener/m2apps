@@ -105,7 +105,7 @@ try:
 				change_rates['month'] = change_rates.index
 				change_rates['month'] = change_rates['month'].apply(lambda dt: datetime.datetime.strptime(str(dt)[0:19], "%Y-%m-%d %H:%M:%S").month)				
 			if change_rates.shape[1]>0:
-				latex = r'''### Some insights on the price change (%), $r = \frac{S_{close}}{S_{open}}-1$'''
+				latex = r'''### Insights on % price change: $r = \frac{S_{close}}{S_{open}}-1$'''
 				st.markdown(latex)
 				for s in symbols:
 					st.markdown('''##### {0} - {1}:'''.format(s, dict(symbol_company_pairs)[s]))
